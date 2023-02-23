@@ -10,15 +10,15 @@ function add() {
     do
         read -p "Enter username with alphabets " username
     done
-    
+
     read -p "Enter role:" role
-    
+
     while ! [[ "${role}" =~ ^[A-Za-z]+$ ]]
     do
         read -p "Enter role with alphabets " role
     done
-    
-    echo $username, $role >> $filePath
+
+   echo $username, $role >> $filePath
 }
 
 function backup() {
@@ -28,17 +28,17 @@ function backup() {
 }
 
 function restore {
-    latestBackupFile=$(ls $fileDir/*-$fileName.backup | tail -n 1)
-    
-    if [[ ! -f $latestBackupFile ]]
-    then
-        echo "No backup file found."
-        exit 1
-    fi
-    
-    cat $latestBackupFile > $filePath
-    
-    echo "Backup is restored."
+  latestBackupFile=$(ls $fileDir/*-$fileName.backup | tail -n 1)
+
+  if [[ ! -f $latestBackupFile ]]
+  then
+    echo "No backup file found."
+    exit 1
+  fi
+
+  cat $latestBackupFile > $filePath
+
+  echo "Backup is restored."
 }
 
 function defaultFunction() {
@@ -46,20 +46,10 @@ function defaultFunction() {
 }
 
 function find() {
-    lineno=0;
-    cat $filePath | while read item
-    do
-        ((lineno++))
-        if [[ $item =~ ([A-Za-z]+,+) ]]
-        then
-            if [[ "$1," = ${BASH_REMATCH[0]} ]]
-            then
-                echo "User exists in $lineno. $item"
-            fi
-        else
-            echo "match not in $item"
-        fi
-    done
+    read -p "Enter username to search: " username
+    selectedUser=$(grep -wn "^$username," $filePath)
+    
+    [[ -z $selectedUser ]] &&  echo "User not found" || echo $selectedUser
 }
 
 dog=dogdog  # ^(dog|cat)+$
@@ -73,15 +63,15 @@ fi
 
 
 if [[ ! -f $filePath ]]
-then
-    read -p "user.db is not available. Can you create(Y/N)" userDBCreateFlag
-    if [[ "$userDBCreateFlag" =~ [yY] ]]; then
-        echo "Creating Users.db"
-        mkdir -p $fileDir && touch $filePath
-    else
-        echo "Exciting the APP"
-        exit;
-    fi
+    then
+        read -p "user.db is not available. Can you create(Y/N)" userDBCreateFlag
+        if [[ "$userDBCreateFlag" =~ [yY] ]]; then
+            echo "Creating Users.db"
+            mkdir -p $fileDir && touch $filePath
+        else
+            echo "Exciting the APP"
+            exit;
+        fi
 fi
 
 case $1 in
